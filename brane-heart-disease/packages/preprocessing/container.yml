@@ -24,8 +24,8 @@ actions:
     input:
     - name: column_name
       type: string
-    - name: file_name
-      type: Data
+    - name: filepath
+      type: IntermediateResult
     output:
     - name: result
       type: IntermediateResult
@@ -36,8 +36,8 @@ actions:
     input:
     - name: column_name
       type: string
-    - name: file_name
-      type: Data
+    - name: filepath
+      type: IntermediateResult
     output:
     - name: result
       type: IntermediateResult

@@ -5,10 +5,10 @@ import sys
 import json
 import pandas as pd
 
-def one_hot_encoding(column_name: str, df: pd.DataFrame) -> pd.DataFrame:
+def one_hot_encoding(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return df
 
-def ordinal_encoding(column_name: str, df: pd.DataFrame) -> pd.DataFrame:
+def ordinal_encoding(df: pd.DataFrame, column_name: str, column_order: list) -> pd.DataFrame:
     return df
 
 # The entrypoint of the script
@@ -20,13 +20,14 @@ if __name__ == "__main__":
 
     # load args from environment variable
     column_name = json.loads(os.environ["COLUMN_NAME"])
-    file_name = json.loads(os.environ["FILE_NAME"])
-    df = pd.read_csv(file_name)
+    filepath = json.loads(os.environ["FILEPATH"])
+    df = pd.read_csv(filepath)
 
     cmd = sys.argv[0]
+    filepath = "/result/result.csv"
     if cmd == "one_hot_encoding":
-        result = functions[cmd](column_name, df)
-        pd.to_csv("/result/result.csv", index = False)
+        result = functions[cmd](df, column_name)
+        result.to_csv(filepath, index = False)
     elif cmd == "ordinal_encoding":
-        result = functions[cmd](column_name, df)
-        pd.to_csv("/result/result.csv", index = False)
+        result = functions[cmd](df, column_name)
+        result.to_csv(filepath, index = False)

@@ -1,0 +1,43 @@
+name: preprocessing
+version: 1.0.0
+kind: ecu
+files:
+- preprocessing.py
+- requirements.txt
+
+dependencies:
+- python3
+- python3-pip
+
+postinstall:
+- pip3 install -r requirements.txt
+
+entrypoint:
+  kind: task
+  exec: preprocessing.py
+
+actions:
+  one_hot_encoding:
+    command:
+      args:
+      - one_hot_encoding
+    input:
+    - name: column_name
+      type: string
+    - name: file_name
+      type: Data
+    output:
+    - name: result
+      type: IntermediateResult
+  ordinal_encoding:
+    command:
+      args:
+      - ordinal_encoding
+    input:
+    - name: column_name
+      type: string
+    - name: file_name
+      type: Data
+    output:
+    - name: result
+      type: IntermediateResult

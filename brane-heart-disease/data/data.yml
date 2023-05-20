@@ -1,4 +1,4 @@
-name: heart-disease-raw-data
+name: heart-disease-raw
 
 access:
   kind: file

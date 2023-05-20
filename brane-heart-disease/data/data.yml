@@ -1,0 +1,5 @@
+name: heart-disease-raw-data
+
+access:
+  kind: file
+  path: ./raw.csv

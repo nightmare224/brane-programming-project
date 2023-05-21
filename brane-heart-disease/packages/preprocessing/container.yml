@@ -17,15 +17,15 @@ entrypoint:
   exec: preprocessing.py
 
 actions:
-  one_hot_encoding:
+  label_encoding:
     command:
       args:
-      - one_hot_encoding
+      - label_encoding
     input:
-    - name: column_name
-      type: string
     - name: filepath
       type: IntermediateResult
+    - name: column_names
+      type: string
     output:
     - name: result
       type: IntermediateResult
@@ -34,10 +34,22 @@ actions:
       args:
       - ordinal_encoding
     input:
-    - name: column_name
-      type: string
     - name: filepath
       type: IntermediateResult
+    - name: column_names
+      type: string
+    output:
+    - name: result
+      type: IntermediateResult
+  one_hot_encoding:
+    command:
+      args:
+      - one_hot_encoding
+    input:
+    - name: filepath
+      type: IntermediateResult
+    - name: column_names
+      type: string
     output:
     - name: result
       type: IntermediateResult

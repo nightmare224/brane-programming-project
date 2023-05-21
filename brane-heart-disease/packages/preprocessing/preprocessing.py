@@ -5,10 +5,13 @@ import sys
 import json
 import pandas as pd
 
-def one_hot_encoding(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+def label_encoding(df: pd.DataFrame, column_names: list[str]) -> pd.DataFrame:
     return df
 
-def ordinal_encoding(df: pd.DataFrame, column_name: str, column_order: list) -> pd.DataFrame:
+def ordinal_encoding(df: pd.DataFrame, column_names: str, column_category: list) -> pd.DataFrame:
+    return df
+
+def one_hot_encoding(df: pd.DataFrame, column_names: str) -> pd.DataFrame:
     return df
 
 # The entrypoint of the script
@@ -21,13 +24,19 @@ if __name__ == "__main__":
     # load args from environment variable
     column_name = json.loads(os.environ["COLUMN_NAME"])
     filepath = json.loads(os.environ["FILEPATH"])
+    # the intermidate result seems would pass the directory
+    if os.path.isdir(filepath):
+        filepath = f"{filepath}/result.csv"
     df = pd.read_csv(filepath)
-
-    cmd = sys.argv[0]
-    filepath = "/result/result.csv"
+    
+    result_filepath = "/result/result.csv"
+    cmd = sys.argv[1]
     if cmd == "one_hot_encoding":
         result = functions[cmd](df, column_name)
-        result.to_csv(filepath, index = False)
+        result.to_csv(result_filepath, index = False)
     elif cmd == "ordinal_encoding":
-        result = functions[cmd](df, column_name)
-        result.to_csv(filepath, index = False)
+        result = functions[cmd](df, column_name, [])
+        result.to_csv(result_filepath, index = False)
+        # from glob import glob
+        # filepath = glob(f"{str(filepath)}/*", recursive = True)
+        # print(yaml.dump({"result": str(filepath)}))

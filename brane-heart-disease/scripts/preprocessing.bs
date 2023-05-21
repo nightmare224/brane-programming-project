@@ -2,4 +2,5 @@
 
 import preprocessing;
 let data := new Data { name := "heart-disease-raw" };
-let data_clean := one_hot_encoding("abc", data);
+let data_clean1 := one_hot_encoding("abc", data);
+let data_clean2 := ordinal_encoding("abc", data_clean1);

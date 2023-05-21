@@ -3,6 +3,5 @@
 import preprocessing;
 let data := new Data { name := "heart-disease-raw" };
 let data_clean1 := label_encoding(data, ["'HeartDisease'", "'Smoking'"]);
-println(data_clean1);
-let data_clean1 := one_hot_encoding(data, "abc");
-let data_clean2 := ordinal_encoding(data_clean1, "efg");
+let data_clean2 := one_hot_encoding(data_clean1, ["'AlcoholDrinking'"]);
+let data_clean3 := ordinal_encoding(data_clean2, ["'GenHealth'"], [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]]);

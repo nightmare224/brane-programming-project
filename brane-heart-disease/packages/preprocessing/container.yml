@@ -38,6 +38,8 @@ actions:
       type: IntermediateResult
     - name: column_names
       type: string
+    - name: columns_categories
+      type: string
     output:
     - name: result
       type: IntermediateResult

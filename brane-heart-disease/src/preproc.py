@@ -52,11 +52,11 @@ def balance_dataset(
         return pd.concat([new_label, new_features], axis=1)
 
 
-def split_significance(
-    df: pd.DataFrame, label: pd.DataFrame, is_sig: bool, alpha: float = 0.05
+def select_significant_features(
+    df: pd.DataFrame, label_name: str, is_sig: bool, alpha: float = 0.05
 ) -> pd.DataFrame:
     result = pd.DataFrame()
-    label = label.squeeze()
+    label = df[label_name]
     if is_sig:
         for name, values in df.items():
             _, pvalue, _, _ = chi2_contingency(pd.crosstab(values, label))
@@ -68,6 +68,15 @@ def split_significance(
             if pvalue >= alpha:
                 result[name] = values
     return result
+
+
+def split_data_train_test(
+    df: pd.DataFrame, label_name: str, test_ratio: float = 0.25
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    x = df.loc[:, df.columns != label_name]
+    y = df.loc[:, label_name]
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_ratio)
+    return x_train, x_test, y_train, y_test
 
 
 df = pd.read_csv("../data/raw.csv")
@@ -95,11 +104,9 @@ label_name = "HeartDisease"
 # df = one_hot_encoding(df, ["HeartDisease", "Smoking"])
 # df = ordinal_encoding(df, ["HeartDisease", "Smoking"], [["No", "Yes"], ["No", "Yes"]])
 # df = balance_dataset(df, label_name)
-# df = split_significance(df, pd.DataFrame(df[label_name]), True)
-print(df)
-# x = df.loc[:, df.columns != label_name]
-# y = df.loc[:, label_name]
-# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+# df = select_significant_features(df, label_name, True)
+# print(df)
+# x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
 # print(x_train)
 # print(x_test)
 # print(y_train)

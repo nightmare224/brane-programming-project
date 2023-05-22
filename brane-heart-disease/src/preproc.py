@@ -6,28 +6,40 @@ from sklearn.preprocessing import OrdinalEncoder
 from scipy.stats import chi2_contingency
 from imblearn.over_sampling import SMOTE
 
+
 def label_encoding(df: pd.DataFrame, column_names: list[str]) -> pd.DataFrame:
     for column_name in column_names:
         enc = LabelEncoder()
         df[column_name] = enc.fit_transform(df[column_name])
     return df
 
-def ordinal_encoding(df: pd.DataFrame, column_names: list[str], columns_categories: list[list[str]]) -> pd.DataFrame:
+
+def ordinal_encoding(
+    df: pd.DataFrame, column_names: list[str], columns_categories: list[list[str]]
+) -> pd.DataFrame:
     enc = OrdinalEncoder(categories=columns_categories)
     df[column_names] = enc.fit_transform(df[column_names])
     return df
 
+
 def one_hot_encoding(df: pd.DataFrame, column_names: list[str]) -> pd.DataFrame:
     for column_name in column_names:
         enc = OneHotEncoder(sparse_output=False)
-        new_columns = enc.fit_transform(df[column_name].to_numpy().reshape(-1, 1)).transpose()
+        new_columns = enc.fit_transform(
+            df[column_name].to_numpy().reshape(-1, 1)
+        ).transpose()
         base_index = df.columns.get_loc(column_name)
         df.drop(columns=column_name, inplace=True)
-        for i, (new_column_name, new_column) in enumerate(zip(enc.get_feature_names_out([column_name]), new_columns)):
+        for i, (new_column_name, new_column) in enumerate(
+            zip(enc.get_feature_names_out([column_name]), new_columns)
+        ):
             df.insert(base_index + i, new_column_name, new_column)
     return df
 
-def balance_dataset(df: pd.DataFrame, label_name: str, ratio: float = 1.0) -> pd.DataFrame:
+
+def balance_dataset(
+    df: pd.DataFrame, label_name: str, ratio: float = 1.0
+) -> pd.DataFrame:
     df.drop_duplicates(inplace=True)
     features = df.loc[:, df.columns != label_name]
     label = df.loc[:, label_name]
@@ -39,28 +51,52 @@ def balance_dataset(df: pd.DataFrame, label_name: str, ratio: float = 1.0) -> pd
     else:
         return pd.concat([new_label, new_features], axis=1)
 
-def split_significance(df: pd.DataFrame, label: pd.DataFrame, sig: float = 0.05) -> tuple[pd.DataFrame, pd.DataFrame]:
-    sig_set = pd.DataFrame()
-    insig_set = pd.DataFrame()
+
+def split_significance(
+    df: pd.DataFrame, label: pd.DataFrame, is_sig: bool, alpha: float = 0.05
+) -> pd.DataFrame:
+    result = pd.DataFrame()
     label = label.squeeze()
-    for name, values in df.items():
-        tb = pd.crosstab(values, label).values
-        _, pvalue, _, _ = chi2_contingency(tb)
-        if pvalue >= sig:
-            insig_set[name] = values
-        else:
-            sig_set[name] = values
-    return sig_set, insig_set
+    if is_sig:
+        for name, values in df.items():
+            _, pvalue, _, _ = chi2_contingency(pd.crosstab(values, label))
+            if pvalue < alpha:
+                result[name] = values
+    else:
+        for name, values in df.items():
+            _, pvalue, _, _ = chi2_contingency(pd.crosstab(values, label))
+            if pvalue >= alpha:
+                result[name] = values
+    return result
+
 
 df = pd.read_csv("../data/raw.csv")
 label_name = "HeartDisease"
-# df = label_encoding(df, ["HeartDisease", "Smoking", "AlcoholDrinking", "Stroke", "DiffWalking", "Sex", "AgeCategory", "Race", "Diabetic", "PhysicalActivity", "GenHealth", "Asthma", "KidneyDisease", "SkinCancer"])
+# df = label_encoding(
+#     df,
+#     [
+#         "HeartDisease",
+#         "Smoking",
+#         "AlcoholDrinking",
+#         "Stroke",
+#         "DiffWalking",
+#         "Sex",
+#         "AgeCategory",
+#         "Race",
+#         "Diabetic",
+#         "PhysicalActivity",
+#         "GenHealth",
+#         "Asthma",
+#         "KidneyDisease",
+#         "SkinCancer",
+#     ],
+# )
 # df = label_encoding(df, ["HeartDisease", "Smoking"])
 # df = one_hot_encoding(df, ["HeartDisease", "Smoking"])
 # df = ordinal_encoding(df, ["HeartDisease", "Smoking"], [["No", "Yes"], ["No", "Yes"]])
 # df = balance_dataset(df, label_name)
-# df, insig_df = split_significance(df, pd.DataFrame(df[label_name]))
-# print(df)
+# df = split_significance(df, pd.DataFrame(df[label_name]), True)
+print(df)
 # x = df.loc[:, df.columns != label_name]
 # y = df.loc[:, label_name]
 # x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)

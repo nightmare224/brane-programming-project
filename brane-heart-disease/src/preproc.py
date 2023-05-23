@@ -92,6 +92,7 @@ df = label_encoding(
         "DiffWalking",
         "Sex",
         "AgeCategory",
+        "Race",
         "Diabetic",
         "PhysicalActivity",
         "Asthma",
@@ -102,7 +103,7 @@ df = label_encoding(
 df = ordinal_encoding(
     df, ["GenHealth"], [["Poor", "Fair", "Good", "Very good", "Excellent"]]
 )
-df = one_hot_encoding(df, ["Race"])
+# df = one_hot_encoding(df, ["Race"])
 df = balance_dataset(df, label_name, ["BMI"])
 # df = select_significant_features(df, label_name, True)
 x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)

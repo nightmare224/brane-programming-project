@@ -38,18 +38,19 @@ def one_hot_encoding(df: pd.DataFrame, column_names: list[str]) -> pd.DataFrame:
 
 
 def balance_dataset(
-    df: pd.DataFrame, label_name: str, ratio: float = 1.0
+    df: pd.DataFrame,
+    label_name: str,
+    decimal_allowed_feature_names: list[str],
+    ratio: float = 1.0,
 ) -> pd.DataFrame:
     df.drop_duplicates(inplace=True)
     features = df.loc[:, df.columns != label_name]
     label = df.loc[:, label_name]
     sm = SMOTE(sampling_strategy=ratio)
-    try:
-        new_features, new_label = sm.fit_resample(features, label)
-    except ValueError:
-        raise ValueError("Dataset contains non-numeric value")
-    else:
-        return pd.concat([new_label, new_features], axis=1)
+    new_features, new_label = sm.fit_resample(features, label)
+    rounding_column_names = new_features.columns.drop(decimal_allowed_feature_names)
+    new_features[rounding_column_names] = new_features[rounding_column_names].round()
+    return pd.concat([new_label, new_features], axis=1)
 
 
 def select_significant_features(
@@ -81,37 +82,31 @@ def split_data_train_test(
 
 df = pd.read_csv("../data/raw.csv")
 label_name = "HeartDisease"
-# df = label_encoding(
-#     df,
-#     [
-#         "HeartDisease",
-#         "Smoking",
-#         "AlcoholDrinking",
-#         "Stroke",
-#         "DiffWalking",
-#         "Sex",
-#         "AgeCategory",
-#         "Race",
-#         "Diabetic",
-#         "PhysicalActivity",
-#         "GenHealth",
-#         "Asthma",
-#         "KidneyDisease",
-#         "SkinCancer",
-#     ],
-# )
-# df = label_encoding(df, ["HeartDisease", "Smoking"])
-# df = one_hot_encoding(df, ["HeartDisease", "Smoking"])
-# df = ordinal_encoding(df, ["HeartDisease", "Smoking"], [["No", "Yes"], ["No", "Yes"]])
-# df = balance_dataset(df, label_name)
+df = label_encoding(
+    df,
+    [
+        "HeartDisease",
+        "Smoking",
+        "AlcoholDrinking",
+        "Stroke",
+        "DiffWalking",
+        "Sex",
+        "AgeCategory",
+        "Diabetic",
+        "PhysicalActivity",
+        "Asthma",
+        "KidneyDisease",
+        "SkinCancer",
+    ],
+)
+df = ordinal_encoding(
+    df, ["GenHealth"], [["Poor", "Fair", "Good", "Very good", "Excellent"]]
+)
+df = one_hot_encoding(df, ["Race"])
+df = balance_dataset(df, label_name, ["BMI"])
 # df = select_significant_features(df, label_name, True)
-# print(df)
-# x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
-# print(x_train)
-# print(x_test)
-# print(y_train)
-# print(y_test)
-# x_train.to_csv("x_train.csv")
-# x_test.to_csv("x_test.csv")
-# y_train.to_csv("y_train.csv")
-# y_test.to_csv("y_test.csv")
+x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
+x_train.to_csv("../data/x_train.csv")
+x_test.to_csv("../data/x_test.csv")
+y_train.to_csv("../data/y_train.csv")
+y_test.to_csv("../data/y_test.csv")

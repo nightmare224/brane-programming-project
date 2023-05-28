@@ -1,0 +1,4 @@
+pandas==1.5.2
+numpy==1.23.5
+plotly==5.11.0
+kaleido

@@ -1,0 +1,8 @@
+// A BraneScript workflow for testing the preprocessing package
+
+import visualization;
+let data := new Data { name := "heart-disease-analysis" };
+let img := total_histogram(data, "AgeCategory", []);
+// data_cleaned := one_hot_encoding(data_cleaned, ["'AlcoholDrinking'"]);
+// data_cleaned := ordinal_encoding(data_cleaned, ["'GenHealth'"], [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]]);
+commit_result("img", img);

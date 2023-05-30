@@ -1,0 +1,61 @@
+name: visualization
+version: 1.0.0
+kind: ecu
+files:
+- visualization.py
+- requirements.txt
+
+dependencies:
+- python3
+- python3-pip
+
+postinstall:
+- pip3 install -r requirements.txt
+
+entrypoint:
+  kind: task
+  exec: visualization.py
+
+actions:
+  feature_importance_rf:
+    command:
+      args:
+      - feature_importance_rf
+    input:
+    - name: filepath
+      type: IntermediateResult
+    output:
+    - name: result
+      type: IntermediateResult
+  total_histogram:
+    command:
+      args:
+      - total_histogram
+    input:
+    - name: filepath
+      type: IntermediateResult
+    - name: feature_name
+      type: string
+    - name: feature_order
+      type: string
+    output:
+    - name: result
+      type: IntermediateResult
+  positive_ratio_histogram:
+    command:
+      args:
+      - positive_ratio_histogram
+    input:
+    - name: filepath
+      type: IntermediateResult
+    - name: feature_name
+      type: string
+    - name: label_name
+      type: string
+    - name: positive_value
+      type: string
+    - name: feature_order
+      type: string
+    output:
+    - name: result
+      type: IntermediateResult

@@ -1,0 +1,43 @@
+name: model
+version: 1.0.0
+kind: ecu
+files:
+- model.py
+- requirements.txt
+
+dependencies:
+- python3
+- python3-pip
+
+postinstall:
+- pip3 install -r requirements.txt
+
+entrypoint:
+  kind: task
+  exec: model.py
+
+actions:
+  generate_data_train_test:
+    command:
+      args:
+      - generate_data_train_test
+    input:
+    - name: filepath
+      type: IntermediateResult
+    - name: label_name
+      type: string
+    output:
+    - name: result
+      type: IntermediateResult
+  train:
+    command:
+      args:
+      - train
+    input:
+    - name: filepath_x
+      type: IntermediateResult
+    - name: filepath_y
+      type: IntermediateResult
+    output:
+    - name: result
+      type: IntermediateResult

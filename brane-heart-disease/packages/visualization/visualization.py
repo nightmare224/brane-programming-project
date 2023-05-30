@@ -55,7 +55,7 @@ def total_histogram(
     )
     fig.update_xaxes(title=feature_name)
     # fig.write_image(f"total_{feature_name}.png")
-    fig.write_html(f"total_{feature_name}.html")
+    fig.write_html(f"/result/total_{feature_name}.html")
 
 def positive_ratio_histogram(
     df: pd.DataFrame,
@@ -86,7 +86,7 @@ def positive_ratio_histogram(
     fig.update_layout(title=f"<b>The ratio of {feature_name} in {label_name}</b>")
     fig.update_yaxes(title="Ratio", rangemode="tozero", secondary_y=False)
     fig.update_xaxes(title=feature_name)
-    fig.write_image(f"positive_ratio_{feature_name}.png")
+    fig.write_image(f"/result/positive_ratio_{feature_name}.png")
 
 
 # The entrypoint of the script

@@ -2,7 +2,16 @@
 
 import visualization;
 let data := new Data { name := "heart-disease-analysis" };
+
 let img := total_histogram(data, "AgeCategory", []);
+commit_result("total_histogram", img);
+img := positive_ratio_histogram(data, "AgeCategory", "HeartDisease", "Yes",[]);
+commit_result("positive_ratio_histogram", img);
+
+img := total_histogram(data, "BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+commit_result("total_histogram", img);
+img := positive_ratio_histogram(data, "BMICategory", "HeartDisease", "Yes", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+commit_result("positive_ratio_histogram", img);
+
 // data_cleaned := one_hot_encoding(data_cleaned, ["'AlcoholDrinking'"]);
 // data_cleaned := ordinal_encoding(data_cleaned, ["'GenHealth'"], [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]]);
-commit_result("img", img);

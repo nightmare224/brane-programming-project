@@ -17,7 +17,11 @@ from joblib import dump, load
 def split_data_train_test(
     df: pd.DataFrame, label_name: str, test_ratio: float = 0.25
 ):
-    df = balance_dataset(df, label_name, list(df.dtypes[df.dtypes == "float64"].index))
+    # decimal_feature_names = []
+    # for feature_name in list(df.dtypes[df.dtypes == "float64"].index):
+    #     if not np.all(df[feature_name].astype(int) == df[feature_name]):
+    #         decimal_feature_names.append(feature_name)
+    # df = balance_dataset(df, label_name, decimal_feature_names)
     x = df.loc[:, df.columns != label_name]
     y = df.loc[:, label_name]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_ratio)
@@ -43,7 +47,7 @@ def balance_dataset(
 
 
 def train_dt(x_train: pd.DataFrame, y_train: pd.DataFrame):
-    dt = DecisionTreeClassifier(max_features="sqrt")
+    dt = DecisionTreeClassifier(max_features="sqrt", class_weight="balanced")
     dt.fit(x_train, y_train)
     dt.train_acc = dt.score(x_train, y_train)
 
@@ -52,7 +56,7 @@ def train_dt(x_train: pd.DataFrame, y_train: pd.DataFrame):
 def train_rf(x_train: pd.DataFrame, y_train: pd.DataFrame):
     x_train = np.array(x_train)
     y_train = np.array(y_train)
-    rf = RandomForestClassifier()
+    rf = RandomForestClassifier(class_weight="balanced")
     rf.fit(x_train, y_train)
     rf.train_acc = rf.score(x_train, y_train)
 
@@ -62,11 +66,8 @@ def train_xgb(x_train: pd.DataFrame, y_train: pd.DataFrame):
     xgb = XGBClassifier(
         booster="gbtree",
         colsample_bytree=0.7,
-        gamma=0.2,
-        learning_rate=0.5,
         max_depth=30,
-        min_child_weight=3,
-        n_estimators=150,
+        scale_pos_weight=y_train.value_counts()[0] / y_train.value_counts()[1]
     )
     xgb.fit(x_train, y_train)
     xgb.train_acc = xgb.score(x_train, y_train)
@@ -86,30 +87,42 @@ def test_xgb(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
     model.test_acc = model.score(x_test, y_test)
 
 def generate_model(df: pd.DataFrame, label_name: str):
+    def model_dump(model, model_name, feature_names):
+        model.model_name = model_name
+        model.feature_names = feature_names
+        dump(model, f"/result/model_{model_name}.joblib")
+
     x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
+    feature_names = list(x_train.columns)
     
     # train and test model
     dt = train_dt(x_train, y_train)
     test_dt(dt, x_test, y_test)
+    model_dump(dt, "decisiontree", feature_names)
+    del dt
 
     rf = train_rf(x_train, y_train)
     test_rf(rf, x_test, y_test)
+    model_dump(rf, "randomforest", feature_names)
+    del rf
 
     xgb = train_xgb(x_train, y_train)
     test_xgb(xgb, x_test, y_test)
+    model_dump(xgb, "xgboost", feature_names)
+    del xgb
 
     # store test result and dump
-    model = {
-        "decisiontree": dt,
-        "randomforest":rf,
-        "xgboost": xgb
-    }
-    for model_name in model.keys():
-        # store model metadata
-        model[model_name].model_name = model_name
-        model[model_name].feature_names = list(x_train.columns)
-        # dump model
-        dump(model[model_name], f"./model_{model_name}.joblib")
+    # model = {
+    #     "decisiontree": dt,
+    #     "randomforest":rf,
+    #     "xgboost": xgb
+    # }
+    # for model_name in model.keys():
+    #     # store model metadata
+    #     model[model_name].model_name = model_name
+    #     model[model_name].feature_names = list(x_train.columns)
+    #     # dump model
+    #     dump(model[model_name], f"./model_{model_name}.joblib")
 
 
 if __name__ == "__main__":
@@ -127,4 +140,5 @@ if __name__ == "__main__":
 
         df = pd.read_csv(f"{filepath}/data_cleaned.csv")
         functions[cmd](df, label_name)
+
 

@@ -7,11 +7,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 from typing import List, Any
-from plotly.subplots import make_subplots
-from joblib import dump, load
+from joblib import load
 
 
-def feature_importance_rf(model: Any, feature_names: List) -> None:
+def feature_importance(model: Any, feature_names: List) -> None:
     imp = model.feature_importances_
     imp_sorted = pd.Series(imp, index=feature_names).sort_values(ascending=True)
     df = pd.DataFrame(
@@ -29,35 +28,7 @@ def feature_importance_rf(model: Any, feature_names: List) -> None:
     fig.write_image("feature_importance_rf.png")
 
 
-def total_histogram(
-    df: pd.DataFrame,
-    feature_name: str,
-    feature_order: List = [],
-):
-    total_cnt = df.groupby([feature_name])[feature_name].count()
-    if feature_order:
-        total_cnt = total_cnt[feature_order]
-    feature_category = total_cnt.index
-
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(
-        go.Bar(
-            x=feature_category,
-            y=total_cnt,
-            # marker=dict(color=["lightgray"] * 9 + ["darkred"] * 4),
-            name=f"The total of {feature_name}",
-        ),
-        secondary_y=False,
-    )
-    fig.update_layout(title=f"<b>The total of {feature_name}</b>")
-    fig.update_yaxes(
-        title=f"The number of {feature_name}", rangemode="tozero", secondary_y=False
-    )
-    fig.update_xaxes(title=feature_name)
-    # fig.write_image(f"total_{feature_name}.png")
-    fig.write_html(f"/result/total_{feature_name}.html")
-
-def positive_ratio_histogram(
+def ratio_histogram(
     df: pd.DataFrame,
     feature_name: str,
     label_name: str,
@@ -69,58 +40,46 @@ def positive_ratio_histogram(
     )
     total_cnt = df.groupby([feature_name])[label_name].count()
     positive_ratio = positive_cnt / total_cnt
+    total_ratio = total_cnt / df.shape[0]
     if feature_order:
         positive_ratio = positive_ratio[feature_order]
     feature_category = positive_ratio.index
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(
-        go.Bar(
-            x=feature_category,
-            y=positive_ratio,
-            # marker=dict(color=["lightgray"] * 9 + ["darkred"] * 4),
-            name=f"The ratio of {feature_name} in {label_name}",
-        ),
-        secondary_y=False,
-    )
-    fig.update_layout(title=f"<b>The ratio of {feature_name} in {label_name}</b>")
-    fig.update_yaxes(title="Ratio", rangemode="tozero", secondary_y=False)
-    fig.update_xaxes(title=feature_name)
-    fig.write_image(f"/result/positive_ratio_{feature_name}.png")
+    fig = go.Figure(data = [
+        go.Bar(x=feature_category, y=positive_ratio * 100, name=f"Positive ratio (compared to category number)"),
+        go.Bar(x=feature_category, y=total_ratio * 100, name=f"Category Ratio (compared to total number)"),
 
+    ])
+    fig.update_layout(barmode='group')
+    fig.update_layout(title_text=f"<b>The ratio of {feature_name} in {label_name}</b>")
+    fig.update_yaxes(title="Percentage (%)")
+    fig.update_xaxes(title=feature_name)
+    fig.update_layout(
+       xaxis = dict(
+          tickmode = 'linear',
+          tick0 = 1,
+          dtick = 1
+       )
+    )
+    fig.write_html(f"/result/ratio_{feature_name}.html")
 
 # The entrypoint of the script
 if __name__ == "__main__":
     functions = {
-        "feature_importance_rf": feature_importance_rf,
-        "total_histogram": total_histogram,
-        "positive_ratio_histogram": positive_ratio_histogram,
+        "feature_importance": feature_importance,
+        "ratio_histogram": ratio_histogram,
     }
     if len(sys.argv) != 2 or (sys.argv[1] not in functions.keys()):
         print(f"Usage: {sys.argv[0]} {list(functions.keys())}")
         exit(1)
 
-    # TODO: make it like in preprocessing.py format and write container.ymal
-    # filepath is analysis.csv
-    # filepath = json.loads(os.environ["FILEPATH"])
-    # df = pd.read_csv(filepath)
-
     # run function
     cmd = sys.argv[1]
-    if cmd == "feature_importance_rf":
+    if cmd == "feature_importance":
         filepath = json.loads(os.environ["FILEPATH"])
         model = load(filepath)
         functions[cmd](model)
-    elif cmd == "total_histogram":
-        # load parameter
-        filepath = json.loads(os.environ["FILEPATH"])
-        feature_name = json.loads(os.environ["FEATURE_NAME"])
-        feature_order = eval(json.loads(os.environ["FEATURE_ORDER"]))
-
-        # df = pd.read_csv(f"{filepath}/analysis.csv")
-        df = pd.read_csv(filepath)
-        functions[cmd](df, feature_name, feature_order)
-    elif cmd == "positive_ratio_histogram":
+    elif cmd == "ratio_histogram":
         # load parameter
         filepath = json.loads(os.environ["FILEPATH"])
         feature_name = json.loads(os.environ["FEATURE_NAME"])
@@ -132,25 +91,3 @@ if __name__ == "__main__":
         functions[cmd](
             df, feature_name, label_name, positive_value, feature_order
         )
-
-
-    # ### some important feature
-    # # age
-    # positive_ratio_histogram(df, "AgeCategory", "HeartDisease", "Yes")
-    # total_histogram(df, "AgeCategory")
-
-    # # bmi
-    # positive_ratio_histogram(
-    #     df,
-    #     "BMICategory",
-    #     "HeartDisease",
-    #     "Yes",
-    #     ["Underweight", "Normal weight", "Overweight", "Obesity"],
-    # )
-    # total_histogram(
-    #     df, "BMICategory", ["Underweight", "Normal weight", "Overweight", "Obesity"]
-    # )
-
-    # # sleep time
-    # positive_ratio_histogram(df, "SleepTime", "HeartDisease", "Yes")
-    # total_histogram(df, "SleepTime")

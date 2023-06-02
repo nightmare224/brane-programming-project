@@ -17,34 +17,20 @@ entrypoint:
   exec: visualization.py
 
 actions:
-  feature_importance_rf:
+  feature_importance:
     command:
       args:
-      - feature_importance_rf
+      - feature_importance
     input:
     - name: filepath
       type: IntermediateResult
     output:
     - name: result
       type: IntermediateResult
-  total_histogram:
+  ratio_histogram:
     command:
       args:
-      - total_histogram
-    input:
-    - name: filepath
-      type: IntermediateResult
-    - name: feature_name
-      type: string
-    - name: feature_order
-      type: string
-    output:
-    - name: result
-      type: IntermediateResult
-  positive_ratio_histogram:
-    command:
-      args:
-      - positive_ratio_histogram
+      - ratio_histogram
     input:
     - name: filepath
       type: IntermediateResult

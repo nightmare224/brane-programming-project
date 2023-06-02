@@ -1,17 +1,15 @@
 // A BraneScript workflow for testing the preprocessing package
 
 import visualization;
-let data := new Data { name := "heart-disease-analysis" };
 
-let img := total_histogram(data, "AgeCategory", []);
-commit_result("total_histogram", img);
-img := positive_ratio_histogram(data, "AgeCategory", "HeartDisease", "Yes",[]);
-commit_result("positive_ratio_histogram", img);
 
-img := total_histogram(data, "BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
-commit_result("total_histogram", img);
-img := positive_ratio_histogram(data, "BMICategory", "HeartDisease", "Yes", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
-commit_result("positive_ratio_histogram", img);
+func heart_disease_positive_ratio(feature_name, feature_order) {
+    let data := new Data { name := "heart-disease-analysis" };
+    let img := ratio_histogram(data, feature_name, "HeartDisease", "Yes", feature_order);
+    commit_result("ratio_histogram", img);
+}
 
-// data_cleaned := one_hot_encoding(data_cleaned, ["'AlcoholDrinking'"]);
-// data_cleaned := ordinal_encoding(data_cleaned, ["'GenHealth'"], [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]]);
+heart_disease_positive_ratio("AgeCategory", []);
+heart_disease_positive_ratio("SleepTime", []);
+heart_disease_positive_ratio("GenHealth", ["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]);
+heart_disease_positive_ratio("BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);

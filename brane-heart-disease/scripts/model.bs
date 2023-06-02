@@ -1,7 +1,7 @@
 // A BraneScript workflow for testing the preprocessing package
 
 import model;
-// let data := new Data { name := "heart-disease-data-cleaned" };
+let data := new Data { name := "preprocessing" };
 
-let data := new Data { name := "heart-disease-raw" };
-let data_split := generate_data_train_test(data, "HeartDisease");
+let model := generate_model(data, "HeartDisease");
+commit_result("heart-disease-model", model);

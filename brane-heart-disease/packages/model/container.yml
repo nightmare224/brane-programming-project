@@ -17,27 +17,15 @@ entrypoint:
   exec: model.py
 
 actions:
-  generate_data_train_test:
+  generate_model:
     command:
       args:
-      - generate_data_train_test
+      - generate_model
     input:
     - name: filepath
       type: IntermediateResult
     - name: label_name
       type: string
-    output:
-    - name: result
-      type: IntermediateResult
-  train:
-    command:
-      args:
-      - train
-    input:
-    - name: filepath_x
-      type: IntermediateResult
-    - name: filepath_y
-      type: IntermediateResult
     output:
     - name: result
       type: IntermediateResult

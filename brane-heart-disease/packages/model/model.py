@@ -8,11 +8,13 @@ import pandas as pd
 from typing import List
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from joblib import dump, load
 
 
-def generate_data_train_test(
+def split_data_train_test(
     df: pd.DataFrame, label_name: str, test_ratio: float = 0.25
 ):
     df = balance_dataset(df, label_name, list(df.dtypes[df.dtypes == "float64"].index))
@@ -20,11 +22,7 @@ def generate_data_train_test(
     y = df.loc[:, label_name]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_ratio)
 
-    x_train.to_csv("/result/x_train.csv")
-    x_test.to_csv("/result/x_test.csv")
-    y_train.to_csv("/result/y_train.csv")
-    y_test.to_csv("/result/y_test.csv")
-
+    return x_train, x_test, y_train, y_test
 
 def balance_dataset(
     df: pd.DataFrame,
@@ -42,44 +40,91 @@ def balance_dataset(
     return pd.concat([new_label, new_features], axis=1)
 
 
-def train(X_train: pd.DataFrame, Y_train: pd.DataFrame):
-    feature_names = list(X_train.columns)
-    x_train = np.array(X_train)
-    y_train = np.array(Y_train[Y_train.columns[0]])
-    rf = RandomForestClassifier(random_state=0)
+
+
+def train_dt(x_train: pd.DataFrame, y_train: pd.DataFrame):
+    dt = DecisionTreeClassifier(max_features="sqrt")
+    dt.fit(x_train, y_train)
+    dt.train_acc = dt.score(x_train, y_train)
+
+    return dt
+
+def train_rf(x_train: pd.DataFrame, y_train: pd.DataFrame):
+    x_train = np.array(x_train)
+    y_train = np.array(y_train)
+    rf = RandomForestClassifier()
     rf.fit(x_train, y_train)
-    rf.feature_names = feature_names
-    dump(rf, "/result/model_rf.joblib")
+    rf.train_acc = rf.score(x_train, y_train)
+
+    return rf
+
+def train_xgb(x_train: pd.DataFrame, y_train: pd.DataFrame):
+    xgb = XGBClassifier(
+        booster="gbtree",
+        colsample_bytree=0.7,
+        gamma=0.2,
+        learning_rate=0.5,
+        max_depth=30,
+        min_child_weight=3,
+        n_estimators=150,
+    )
+    xgb.fit(x_train, y_train)
+    xgb.train_acc = xgb.score(x_train, y_train)
+
+    return xgb
 
 
-def test(model, X_test, Y_test):
-    pass
+def test_dt(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
+    model.test_acc = model.score(x_test, y_test)
 
+def test_rf(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
+    x_test = np.array(x_test)
+    y_test = np.array(y_test)
+    model.test_acc = model.score(x_test, y_test)
 
-def predict(model, X_test):
-    pass
+def test_xgb(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
+    model.test_acc = model.score(x_test, y_test)
+
+def generate_model(df: pd.DataFrame, label_name: str):
+    x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
+    
+    # train and test model
+    dt = train_dt(x_train, y_train)
+    test_dt(dt, x_test, y_test)
+
+    rf = train_rf(x_train, y_train)
+    test_rf(rf, x_test, y_test)
+
+    xgb = train_xgb(x_train, y_train)
+    test_xgb(xgb, x_test, y_test)
+
+    # store test result and dump
+    model = {
+        "decisiontree": dt,
+        "randomforest":rf,
+        "xgboost": xgb
+    }
+    for model_name in model.keys():
+        # store model metadata
+        model[model_name].model_name = model_name
+        model[model_name].feature_names = list(x_train.columns)
+        # dump model
+        dump(model[model_name], f"./model_{model_name}.joblib")
 
 
 if __name__ == "__main__":
-    functions = {"train": train, "generate_data_train_test": generate_data_train_test}
+    functions = {"generate_model": generate_model}
     if len(sys.argv) != 2 or (sys.argv[1] not in functions.keys()):
         print(f"Usage: {sys.argv[0]} {list(functions.keys())}")
         exit(1)
 
     # run function
     cmd = sys.argv[1]
-    if cmd == "train":
-        # load parameter
-        filepath_x = json.loads(os.environ["FILEPATH_X"])
-        filepath_y = json.loads(os.environ["FILEPATH_Y"])
-
-        df_x = pd.read_csv(filepath_x)
-        df_y = pd.read_csv(filepath_y)
-        functions[cmd](df_x, df_y)
-    elif cmd == "generate_data_train_test":
+    if cmd == "generate_model":
         # load parameter
         filepath = json.loads(os.environ["FILEPATH"])
         label_name = json.loads(os.environ["LABEL_NAME"])
 
-        df = pd.read_csv(filepath)
+        df = pd.read_csv(f"{filepath}/data_cleaned.csv")
         functions[cmd](df, label_name)
+

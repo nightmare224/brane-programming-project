@@ -1,7 +1,14 @@
-// A BraneScript workflow for testing the preprocessing package
+// A BraneScript workflow for the preprocessing package
 
 import preprocessing;
 let data := new Data { name := "heart-disease-raw" };
-let data_cleaned := label_encoding(data, ["'HeartDisease'", "'Smoking'"]);
-data_cleaned := one_hot_encoding(data_cleaned, ["'AlcoholDrinking'"]);
-data_cleaned := ordinal_encoding(data_cleaned, ["'GenHealth'"], [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]]);
+
+let label_feature := ["'HeartDisease'", "'Smoking'", "'AlcoholDrinking'", "'Stroke'", "'DiffWalking'", "'Sex'", "'AgeCategory'", "'Race'", "'Diabetic'", "'PhysicalActivity'", "'Asthma'", "'KidneyDisease'", "'SkinCancer'"];
+let data_cleaned := label_encoding(data, label_feature);
+
+let ordinal_feature := ["'GenHealth'"];
+let ordinal_feature_order := [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]];
+data_cleaned := ordinal_encoding(data_cleaned, ordinal_feature, ordinal_feature_order);
+
+
+commit_result("preprocessing", data_cleaned);

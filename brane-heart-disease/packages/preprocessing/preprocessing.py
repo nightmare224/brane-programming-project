@@ -4,14 +4,18 @@ import os
 import sys
 import json
 import pandas as pd
-from typing import List
+from typing import List, Union
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 
-def label_encoding(df: pd.DataFrame, column_names: List[str]) -> pd.DataFrame:
+def label_encoding(df: pd.DataFrame, column_names: Union[List[str], str]) -> pd.DataFrame:
+    if type(column_names) is str:
+        column_names = [column_names]
+
     for column in column_names:
         df[column] = LabelEncoder().fit_transform(df[column])
+    
     return df
 
 def ordinal_encoding(df: pd.DataFrame, column_names: List[str], columns_categories: List[List[str]]) -> pd.DataFrame:
@@ -41,13 +45,16 @@ if __name__ == "__main__":
     # load args from environment variable (common)
     filepath = json.loads(os.environ["FILEPATH"])
     column_names = eval(json.loads(os.environ["COLUMN_NAMES"]))
+    # column_names = eval(os.environ["COLUMN_NAMES"])
+
+
     # the intermidate result seems would pass the directory
     if os.path.isdir(filepath):
-        filepath = f"{filepath}/result.csv"
+        filepath = f"{filepath}/data_cleaned.csv"
     df = pd.read_csv(filepath)
     
     # run function
-    result_filepath = "/result/result.csv"
+    result_filepath = "/result/data_cleaned.csv"
     cmd = sys.argv[1]
     if cmd == "label_encoding":
         result = functions[cmd](df, column_names)

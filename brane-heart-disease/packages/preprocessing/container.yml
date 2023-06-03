@@ -55,3 +55,21 @@ actions:
     output:
     - name: result
       type: IntermediateResult
+  categorize_numerical:
+    command:
+      args:
+      - categorize_numerical
+    input:
+    - name: filepath
+      type: IntermediateResult
+    - name: column_name
+      type: string
+    - name: new_column_name
+      type: string
+    - name: upbound
+      type: string
+    - name: column_categories
+      type: string
+    output:
+    - name: result
+      type: IntermediateResult

@@ -1,0 +1,5 @@
+import visualization;
+
+let fig := new Data { name := "heart-disease-report" };
+let report := generate_report(fig);
+commit_result("heart-disease-report", report);

@@ -3,6 +3,7 @@
 import preprocessing;
 let data := new Data { name := "heart-disease-raw" };
 
+// for ml training
 let label_feature := ["'HeartDisease'", "'Smoking'", "'AlcoholDrinking'", "'Stroke'", "'DiffWalking'", "'Sex'", "'AgeCategory'", "'Race'", "'Diabetic'", "'PhysicalActivity'", "'Asthma'", "'KidneyDisease'", "'SkinCancer'"];
 let data_cleaned := label_encoding(data, label_feature);
 
@@ -10,5 +11,8 @@ let ordinal_feature := ["'GenHealth'"];
 let ordinal_feature_order := [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]];
 data_cleaned := ordinal_encoding(data_cleaned, ordinal_feature, ordinal_feature_order);
 
+commit_result("heart-disease-data", data_cleaned);
 
-commit_result("preprocessing", data_cleaned);
+// for analysis
+let data_analysis := categorize_numerical(data, "BMI", "BMICategory", ["18.5", "24.9", "29.9", "'inf'"], ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+commit_result("heart-disease-data", data_analysis);

@@ -163,7 +163,7 @@ if __name__ == "__main__":
         positive_value = json.loads(os.environ["POSITIVE_VALUE"])
         feature_order = eval(json.loads(os.environ["FEATURE_ORDER"]))
 
-        df = pd.read_csv(filepath)
+        df = pd.read_csv(f"{filepath}/analysis.csv")
         functions[cmd](
             df, feature_name, label_name, positive_value, feature_order
         )

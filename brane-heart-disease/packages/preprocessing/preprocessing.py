@@ -45,7 +45,6 @@ if __name__ == "__main__":
     # load args from environment variable (common)
     filepath = json.loads(os.environ["FILEPATH"])
     column_names = eval(json.loads(os.environ["COLUMN_NAMES"]))
-    # column_names = eval(os.environ["COLUMN_NAMES"])
 
 
     # the intermidate result seems would pass the directory

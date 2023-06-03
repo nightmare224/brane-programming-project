@@ -68,9 +68,36 @@ def ratio_histogram(
     )
     fig.write_html(f"/result/ratio_{feature_name}.html")
 
+
+def model_report(model: Any):
+    report = model.report
+    model_name = model.model_name
+    df = pd.DataFrame(report).transpose()
+    df = df.round(2).applymap("{:.2f}".format)
+    df.at["accuracy", "precision"] = ""
+    df.at["accuracy", "recall"] = ""
+    df.at["accuracy", "support"] = df.at["macro avg", "support"]
+    df["support"] = df["support"].astype(str).str.split(".").str[0].astype(int)
+    df = pd.concat(
+        [
+            df.iloc[:2],
+            pd.DataFrame([[""] * len(df.columns)], index=[""], columns=df.columns),
+            df.iloc[2:],
+        ]
+    )
+
+    table = go.Table(
+        header=dict(values=[""] + df.columns.tolist()),
+        cells=dict(values=[df.index.tolist()] + [df[col] for col in df.columns]),
+    )
+    layout = go.Layout(title=f"The Classification Report of {model_name}", title_x=0.5)
+    fig = go.Figure(data=[table], layout=layout)
+    fig.write_html(f"/result/model_report_{model_name}.html")
+
 def generate_report(filepath):
     imp_filepaths = glob(f"{filepath}/feature_importance*.html")
     ratio_filepaths = glob(f"{filepath}/ratio*.html")
+    model_filepaths = glob(f"{filepath}/model_report*.html")
 
     # feature importance
     feature_imp_item = []
@@ -86,12 +113,21 @@ def generate_report(filepath):
         feature_name = re.match(r"ratio_(.*).html", filename).group(1)
         feature_item.append(f"<a class=\"fig\" name=\"{filename}\" href=\"#\">{feature_name}</a>")
 
+    # model table
+    model_item = []
+    for filepath in model_filepaths:
+        filename = os.path.basename(filepath)
+        model_name = re.match(r"model_report_(.*).html", filename).group(1)
+        model_item.append(f"<a class=\"fig\" name=\"{filename}\" href=\"#\">{model_name}</a>")
+
+
     # render page
     env = Environment(loader=FileSystemLoader('./'))
     template = env.get_template('base.html')
     out = template.render(
         features = feature_item,
-        feature_imps = feature_imp_item
+        feature_imps = feature_imp_item,
+        models = model_item
     )
 
     # output report
@@ -103,6 +139,7 @@ if __name__ == "__main__":
     functions = {
         "feature_importance": feature_importance,
         "ratio_histogram": ratio_histogram,
+        "model_report": model_report,
         "generate_report": generate_report
     }
     if len(sys.argv) != 2 or (sys.argv[1] not in functions.keys()):
@@ -130,6 +167,13 @@ if __name__ == "__main__":
         functions[cmd](
             df, feature_name, label_name, positive_value, feature_order
         )
+    elif cmd == "model_report":
+        filepath = json.loads(os.environ["FILEPATH"])
+        models = glob(f"{filepath}/model_*.joblib")
+        for model_name in models:
+            model = load(model_name)
+            functions[cmd](model)
+            del model
     elif cmd == "generate_report":
         filepath = json.loads(os.environ["FILEPATH"])
         functions[cmd](filepath)

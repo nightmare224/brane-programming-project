@@ -6,6 +6,9 @@ let model := new Data { name := "heart-disease-model" };
 let img := feature_importance(model);
 commit_result("heart-disease-report", img);
 
+img := model_report(model);
+commit_result("heart-disease-report", img);
+
 func heart_disease_positive_ratio(feature_name, feature_order) {
     let data := new Data { name := "heart-disease-analysis" };
     let img := ratio_histogram(data, feature_name, "HeartDisease", "Yes", feature_order);
@@ -16,3 +19,7 @@ heart_disease_positive_ratio("AgeCategory", []);
 heart_disease_positive_ratio("SleepTime", []);
 heart_disease_positive_ratio("GenHealth", ["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]);
 heart_disease_positive_ratio("BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+
+let fig := new Data { name := "heart-disease-report" };
+let report := generate_report(fig);
+commit_result("heart-disease-report", report);

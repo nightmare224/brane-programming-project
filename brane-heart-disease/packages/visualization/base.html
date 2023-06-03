@@ -299,9 +299,9 @@
         </div>
         <ul class="sub-menu">
           <li><a class="link_name" href="#">Models</a></li>
-          <li><a href="ratio_BMICategory.html">BMI</a></li>
-          <li><a href="#">JavaScript</a></li>
-          <li><a href="#">PHP & MySQL</a></li>
+          {%- for model in models %}
+          <li>{{ model -}}</li>
+          {%- endfor %}
         </ul>
       </li>
       <li>
@@ -350,7 +350,7 @@
   <script>
     $(function(){
         $('.fig').click(function(){
-            $('#iframeHolder').html(`<iframe id="iframe" src="${this.name}" height="500" width="1000"></iframe>`);
+            $('#iframeHolder').html(`<iframe id="iframe" src="${this.name}" frameBorder="0" height="500" width="1000"></iframe>`);
         });   
     });
     

@@ -9,6 +9,7 @@ from typing import List
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import classification_report
 from xgboost import XGBClassifier
 from imblearn.over_sampling import SMOTE
 from joblib import dump, load
@@ -82,15 +83,24 @@ def train_xgb(x_train: pd.DataFrame, y_train: pd.DataFrame):
 
 
 def test_dt(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
-    model.test_acc = model.score(x_test, y_test)
+    # model.test_acc = model.score(x_test, y_test)
+    pred = model.predict(x_test)
+    report = classification_report(y_test, pred, output_dict=True)
+    model.report = report
 
 def test_rf(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
     x_test = np.array(x_test)
     y_test = np.array(y_test)
-    model.test_acc = model.score(x_test, y_test)
+    # model.test_acc = model.score(x_test, y_test)
+    pred = model.predict(x_test)
+    report = classification_report(y_test, pred, output_dict=True)
+    model.report = report
 
 def test_xgb(model, x_test: pd.DataFrame, y_test: pd.DataFrame):
-    model.test_acc = model.score(x_test, y_test)
+    # model.test_acc = model.score(x_test, y_test)
+    pred = model.predict(x_test)
+    report = classification_report(y_test, pred, output_dict=True)
+    model.report = report
 
 def generate_model(df: pd.DataFrame, label_name: str):
     def model_dump(model, model_name, feature_names):

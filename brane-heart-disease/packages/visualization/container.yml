@@ -46,6 +46,16 @@ actions:
     output:
     - name: result
       type: IntermediateResult
+  model_report:
+    command:
+      args:
+      - model_report
+    input:
+    - name: filepath
+      type: IntermediateResult
+    output:
+    - name: result
+      type: IntermediateResult
   generate_report:
     command:
       args:

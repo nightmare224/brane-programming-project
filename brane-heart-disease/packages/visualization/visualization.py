@@ -8,9 +8,12 @@ import plotly.graph_objects as go
 import plotly.express as px
 from typing import List, Any
 from joblib import load
+from glob import glob
 
 
-def feature_importance(model: Any, feature_names: List) -> None:
+def feature_importance(model: Any) -> None:
+    feature_names = model.feature_names
+    model_name = model.model_name
     imp = model.feature_importances_
     imp_sorted = pd.Series(imp, index=feature_names).sort_values(ascending=True)
     df = pd.DataFrame(
@@ -25,7 +28,7 @@ def feature_importance(model: Any, feature_names: List) -> None:
     )
     fig.update_layout(title=f"<b>Feature Importance</b>")
     fig.update_coloraxes(showscale=False)
-    fig.write_image("feature_importance_rf.png")
+    fig.write_html(f"/result/feature_importance_{model_name}.html")
 
 
 def ratio_histogram(
@@ -77,8 +80,10 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "feature_importance":
         filepath = json.loads(os.environ["FILEPATH"])
-        model = load(filepath)
-        functions[cmd](model)
+        models = glob(f"{filepath}/*.joblib")
+        for model_name in models:
+            model = load(model_name)
+            functions[cmd](model)
     elif cmd == "ratio_histogram":
         # load parameter
         filepath = json.loads(os.environ["FILEPATH"])

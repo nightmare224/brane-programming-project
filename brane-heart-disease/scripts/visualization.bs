@@ -2,6 +2,9 @@
 
 import visualization;
 
+let model := new Data { name := "heart-disease-model" };
+let img := feature_importance(model);
+commit_result("feature_importance", img);
 
 func heart_disease_positive_ratio(feature_name, feature_order) {
     let data := new Data { name := "heart-disease-analysis" };

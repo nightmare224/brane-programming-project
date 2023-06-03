@@ -56,7 +56,13 @@ def train_dt(x_train: pd.DataFrame, y_train: pd.DataFrame):
 def train_rf(x_train: pd.DataFrame, y_train: pd.DataFrame):
     x_train = np.array(x_train)
     y_train = np.array(y_train)
-    rf = RandomForestClassifier(class_weight="balanced")
+    rf = RandomForestClassifier(
+        n_estimators=90,
+        min_samples_split=3,
+        max_depth=20,
+        class_weight="balanced",
+        criterion="gini"
+    )
     rf.fit(x_train, y_train)
     rf.train_acc = rf.score(x_train, y_train)
 
@@ -90,7 +96,7 @@ def generate_model(df: pd.DataFrame, label_name: str):
     def model_dump(model, model_name, feature_names):
         model.model_name = model_name
         model.feature_names = feature_names
-        dump(model, f"/result/model_{model_name}.joblib")
+        dump(model, f"/result/model_{model_name}.joblib", compress = 3)
 
     x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
     feature_names = list(x_train.columns)

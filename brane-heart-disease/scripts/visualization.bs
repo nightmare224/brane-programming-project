@@ -4,12 +4,12 @@ import visualization;
 
 let model := new Data { name := "heart-disease-model" };
 let img := feature_importance(model);
-commit_result("feature_importance", img);
+commit_result("heart-disease-report", img);
 
 func heart_disease_positive_ratio(feature_name, feature_order) {
     let data := new Data { name := "heart-disease-analysis" };
     let img := ratio_histogram(data, feature_name, "HeartDisease", "Yes", feature_order);
-    commit_result("ratio_histogram", img);
+    commit_result("heart-disease-report", img);
 }
 
 heart_disease_positive_ratio("AgeCategory", []);

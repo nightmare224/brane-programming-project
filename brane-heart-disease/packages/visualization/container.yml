@@ -4,6 +4,7 @@ kind: ecu
 files:
 - visualization.py
 - requirements.txt
+- base.html
 
 dependencies:
 - python3
@@ -42,6 +43,16 @@ actions:
       type: string
     - name: feature_order
       type: string
+    output:
+    - name: result
+      type: IntermediateResult
+  generate_report:
+    command:
+      args:
+      - generate_report
+    input:
+    - name: filepath
+      type: IntermediateResult
     output:
     - name: result
       type: IntermediateResult

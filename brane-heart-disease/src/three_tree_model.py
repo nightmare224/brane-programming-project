@@ -208,7 +208,7 @@ dt_pred_balanced = dt_balanced.predict(x_test_balanced)
 dt_report_balanced = classification_report(
     y_test_balanced, dt_pred_balanced, output_dict=True
 )
-visualise_report(dt_report, "The Classification Report of Decision Tree_balanced")
+visualise_report(dt_report_balanced, "The Classification Report of Decision Tree_balanced")
 
 ROC_curve(
     dt_balanced, x_test_balanced, y_test_balanced, dt, x_test, y_test, "Decision Tree"

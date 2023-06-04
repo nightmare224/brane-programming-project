@@ -73,7 +73,7 @@ def select_significant_features(
 
 def split_data_train_test(
     df: pd.DataFrame, label_name: str, test_ratio: float = 0.25
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     x = df.loc[:, df.columns != label_name]
     y = df.loc[:, label_name]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_ratio)

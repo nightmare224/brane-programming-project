@@ -114,7 +114,7 @@ train = balance_dataset(train, label_name, ["BMI"])
 y_train = train[label_name]
 x_train = train.drop(label_name, axis=1)
 
-x_train.to_csv("../data/x_train_balanced.csv")
-x_test.to_csv("../data/x_test_balanced.csv")
-y_train.to_csv("../data/y_train_balanced.csv")
-y_test.to_csv("../data/y_test_balanced.csv")
+x_train.to_csv("../data/x_train_balanced.csv", index=False)
+x_test.to_csv("../data/x_test_balanced.csv", index=False)
+y_train.to_csv("../data/y_train_balanced.csv", index=False)
+y_test.to_csv("../data/y_test_balanced.csv", index=False)

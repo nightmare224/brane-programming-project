@@ -1,0 +1,55 @@
+// A BraneScript workflow for Heart Disease Analysis
+
+import preprocessing;
+import model;
+import visualization;
+
+println("Pipeline start...");
+
+// data preprocessing
+println("Data preprocessing start...");
+let data := new Data { name := "heart-disease-raw" };
+let label_feature := ["'HeartDisease'", "'Smoking'", "'AlcoholDrinking'", "'Stroke'", "'DiffWalking'", "'Sex'", "'AgeCategory'", "'Race'", "'Diabetic'", "'PhysicalActivity'", "'Asthma'", "'KidneyDisease'", "'SkinCancer'"];
+let ordinal_feature := ["'GenHealth'"];
+let ordinal_feature_order := [["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]];
+// for ml
+let data_ml := label_encoding(data, label_feature);
+data_ml := ordinal_encoding(data_ml, ordinal_feature, ordinal_feature_order);
+// for analysis
+let data_analysis := categorize_numerical(data, "BMI", "BMICategory", ["18.5", "24.9", "29.9", "'inf'"], ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+println("Data preprocessing done.");
+
+// model
+println("Model training start...");
+let model := generate_model(data_ml, "HeartDisease");
+println("Model training done.");
+
+// visualization
+func heart_disease_positive_ratio(feature_name, feature_order) {
+    let fig := ratio_histogram(data_analysis, feature_name, "HeartDisease", "Yes", feature_order);
+    commit_result("heart-disease-report", fig);
+}
+// for model performance
+println("Model performance visualization start...");
+let fig := model_report(model);
+commit_result("heart-disease-report", fig);
+println("Model performance visualization done.");
+// for feature importance
+println("Feature importance visualization start...");
+fig := feature_importance(model);
+commit_result("heart-disease-report", fig);
+println("Feature importance visualization end.");
+// for important feature
+println("Important features analysis start...");
+heart_disease_positive_ratio("AgeCategory", []);
+heart_disease_positive_ratio("SleepTime", []);
+heart_disease_positive_ratio("GenHealth", ["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]);
+heart_disease_positive_ratio("PhysicalHealth", []);
+heart_disease_positive_ratio("BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+heart_disease_positive_ratio("Stroke", []);
+heart_disease_positive_ratio("Sex", []);
+heart_disease_positive_ratio("DiffWalking", []);
+println("Important features analysis end.");
+
+
+println("Pipeline done.");

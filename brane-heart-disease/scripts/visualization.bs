@@ -18,4 +18,8 @@ func heart_disease_positive_ratio(feature_name, feature_order) {
 heart_disease_positive_ratio("AgeCategory", []);
 heart_disease_positive_ratio("SleepTime", []);
 heart_disease_positive_ratio("GenHealth", ["'Poor'", "'Fair'", "'Good'", "'Very good'", "'Excellent'"]);
+heart_disease_positive_ratio("PhysicalHealth", []);
 heart_disease_positive_ratio("BMICategory", ["'Underweight'", "'Normal weight'", "'Overweight'", "'Obesity'"]);
+heart_disease_positive_ratio("Stroke", []);
+heart_disease_positive_ratio("Sex", []);
+heart_disease_positive_ratio("DiffWalking", []);

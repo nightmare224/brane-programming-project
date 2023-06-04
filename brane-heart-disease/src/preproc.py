@@ -73,7 +73,7 @@ def select_significant_features(
 
 def split_data_train_test(
     df: pd.DataFrame, label_name: str, test_ratio: float = 0.25
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     x = df.loc[:, df.columns != label_name]
     y = df.loc[:, label_name]
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_ratio)
@@ -104,10 +104,17 @@ df = ordinal_encoding(
     df, ["GenHealth"], [["Poor", "Fair", "Good", "Very good", "Excellent"]]
 )
 # df = one_hot_encoding(df, ["Race"])
-df = balance_dataset(df, label_name, ["BMI"])
 # df = select_significant_features(df, label_name, True)
-x_train, x_test, y_train, y_test = split_data_train_test(df, label_name)
-x_train.to_csv("../data/x_train.csv")
-x_test.to_csv("../data/x_test.csv")
-y_train.to_csv("../data/y_train.csv")
-y_test.to_csv("../data/y_test.csv")
+value0_count, value1_count = df[label_name].value_counts()
+x_train, x_test, y_train, y_test = split_data_train_test(
+    df, label_name, value0_count / (3 * value0_count + 2 * value1_count)
+)
+train = pd.concat([y_train, x_train], axis=1)
+train = balance_dataset(train, label_name, ["BMI"])
+y_train = train[label_name]
+x_train = train.drop(label_name, axis=1)
+
+x_train.to_csv("../data/x_train_balanced.csv", index=False)
+x_test.to_csv("../data/x_test_balanced.csv", index=False)
+y_train.to_csv("../data/y_train_balanced.csv", index=False)
+y_test.to_csv("../data/y_test_balanced.csv", index=False)

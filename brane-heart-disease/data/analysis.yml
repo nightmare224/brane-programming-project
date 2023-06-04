@@ -1,5 +1,0 @@
-name: heart-disease-analysis
-
-access:
-  kind: file
-  path: ./analysis.csv

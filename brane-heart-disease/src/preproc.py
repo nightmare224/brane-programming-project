@@ -4,7 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import OrdinalEncoder
 from scipy.stats import chi2_contingency
-from imblearn.over_sampling import SMOTE
+from imblearn.over_sampling import RandomOverSampler
 
 
 def label_encoding(df: pd.DataFrame, column_names: list[str]) -> pd.DataFrame:
@@ -46,7 +46,7 @@ def balance_dataset(
     df.drop_duplicates(inplace=True)
     features = df.loc[:, df.columns != label_name]
     label = df.loc[:, label_name]
-    sm = SMOTE(sampling_strategy=ratio)
+    sm = RandomOverSampler(sampling_strategy=ratio)
     new_features, new_label = sm.fit_resample(features, label)
     rounding_column_names = new_features.columns.drop(decimal_allowed_feature_names)
     new_features[rounding_column_names] = new_features[rounding_column_names].round()
@@ -106,11 +106,23 @@ df = ordinal_encoding(
 # df = one_hot_encoding(df, ["Race"])
 # df = select_significant_features(df, label_name, True)
 value0_count, value1_count = df[label_name].value_counts()
+ratio = 0.5
+test_ratio = 0.25
+print(
+    ratio,
+    (1 + ratio)
+    * test_ratio
+    / (test_ratio + ratio * test_ratio + 1 + value1_count / value0_count),
+)
 x_train, x_test, y_train, y_test = split_data_train_test(
-    df, label_name, value0_count / (3 * value0_count + 2 * value1_count)
+    df,
+    label_name,
+    (1 + ratio)
+    * test_ratio
+    / (test_ratio + ratio * test_ratio + 1 + value1_count / value0_count),
 )
 train = pd.concat([y_train, x_train], axis=1)
-train = balance_dataset(train, label_name, ["BMI"])
+train = balance_dataset(train, label_name, ["BMI"], ratio=ratio)
 y_train = train[label_name]
 x_train = train.drop(label_name, axis=1)
 

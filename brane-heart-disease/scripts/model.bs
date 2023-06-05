@@ -1,7 +1,14 @@
 // A BraneScript workflow for testing the preprocessing package
 
+
+println("INFO: This script only do model generation. Execute pipeline.bs instead if you want to run the whole workflow.");
+println("INFO: Run preprocessing.bs before run this workflow.");
+println("Model training start...");
+
 import model;
 let data := new Data { name := "heart-disease-data" };
 
 let model := generate_model(data, "HeartDisease");
 commit_result("heart-disease-model", model);
+
+println("Model training done.");

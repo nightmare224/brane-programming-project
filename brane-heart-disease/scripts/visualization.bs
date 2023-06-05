@@ -1,5 +1,9 @@
 // A BraneScript workflow for testing the preprocessing package
 
+println("INFO: This script only do visualization. Execute pipeline.bs instead if you want to run the whole workflow.");
+println("INFO: Run model.bs before run this workflow.");
+println("Model performance visualization start...");
+
 import visualization;
 
 let model := new Data { name := "heart-disease-model" };
@@ -23,3 +27,5 @@ heart_disease_positive_ratio("BMICategory", ["'Underweight'", "'Normal weight'",
 heart_disease_positive_ratio("Stroke", []);
 heart_disease_positive_ratio("Sex", []);
 heart_disease_positive_ratio("DiffWalking", []);
+
+println("Important features analysis end.");

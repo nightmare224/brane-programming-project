@@ -53,3 +53,5 @@ println("Important features analysis end.");
 
 
 println("Pipeline done.");
+
+println("INFO: Remember to run report.bs to generate the final report.");

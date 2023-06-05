@@ -51,8 +51,8 @@ def ratio_histogram(
     feature_category = positive_ratio.index
 
     fig = go.Figure(data = [
-        go.Bar(x=feature_category, y=positive_ratio * 100, name=f"Positive ratio (compared to category number)"),
-        go.Bar(x=feature_category, y=total_ratio * 100, name=f"Category Ratio (compared to total number)"),
+        go.Bar(x=feature_category, y=positive_ratio * 100, name=f"Positive ratio"),
+        go.Bar(x=feature_category, y=total_ratio * 100, name=f"Category ratio"),
 
     ])
     fig.update_layout(barmode='group')
@@ -66,6 +66,13 @@ def ratio_histogram(
           dtick = 1
        )
     )
+    fig.update_layout(legend=dict(
+        yanchor="top",
+        y=0.99,
+        xanchor="left",
+        x=0.01,
+        font=dict(size=20)
+    ))
     fig.write_html(f"/result/ratio_{feature_name}.html")
 
 

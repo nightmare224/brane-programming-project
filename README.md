@@ -1,7 +1,7 @@
 # brane-programming-project
-The assignment is about using the Brane framework1 to implement a data processing pipeline for the assignment of Web services and Cloud-Based Systems course in UvA.
+The assignment is about using the Brane framework to implement a data processing pipeline for the assignment of Web services and Cloud-Based Systems course in UvA.
 
-
+We aim to find the key factors of heart disease through the dataset from [Kaggle](https://www.kaggle.com/datasets/kamilpytlak/personal-key-indicators-of-heart-disease). We implemented the compute pipeline to do data preprocessing, model training, and visualization as well as the report pipeline to gather the result of the compute pipeline into the HTML report. Through the report, we can find out the key factors of heart disease.
 
 
 

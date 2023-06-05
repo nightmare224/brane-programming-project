@@ -276,7 +276,7 @@
           <span class="link_name">Overview</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Overview</a></li>
+          <li><a id="overview" class="link_name" href="#">Overview</a></li>
         </ul>
       </li>
       <li>
@@ -285,7 +285,7 @@
           <span class="link_name">Dataset</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Dataset</a></li>
+          <li><a id="dataset" class="link_name" href="#">Dataset</a></li>
         </ul>
       </li>
       <li>
@@ -343,15 +343,43 @@
       <span class="text">Heart Disease Analysis</span>
     </div>
     <div id="iframeHolder"></div>
+    <div id="overviewdiv">
+      <pre>
+          This report shows the analysis result of Heart Disease Dataset.
+          
+          In model tab, you can find the performance report of all models.
+
+          In feature importance tab, you can find the feature importance of  all models.
+
+          In feature analysis tab, you can find the ratio of positive number to total number
+          of serveral features.
+      </pre>
+    </div>
   </section>
   
-  <div class="one"></div>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
   <script>
     $(function(){
-        $('.fig').click(function(){
-            $('#iframeHolder').html(`<iframe id="iframe" src="${this.name}" frameBorder="0" height="500" width="1000"></iframe>`);
-        });   
+      $('#overview').click(function(){
+        const fig = document.getElementById("iframeHolder");
+        const overview = document.getElementById("overviewdiv");
+        fig.style.display = 'none';
+        overview.style.display = 'block';
+      });
+      $('#dataset').click(function(){
+        const fig = document.getElementById("iframeHolder");
+        const overview = document.getElementById("overviewdiv");
+        $('#iframeHolder').html(`<iframe id="iframe" src="dataset_dscp.html" frameBorder="0" height="800" width="1200"></iframe>`);
+        fig.style.display = 'block';
+        overview.style.display = 'none';
+      });
+      $('.fig').click(function(){
+        const fig = document.getElementById("iframeHolder");
+        const overview = document.getElementById("overviewdiv");
+        $('#iframeHolder').html(`<iframe id="iframe" src="${this.name}" frameBorder="0" height="500" width="1000"></iframe>`);
+        fig.style.display = 'block';
+        overview.style.display = 'none';
+      });
     });
     
     let arrow = document.querySelectorAll(".arrow");

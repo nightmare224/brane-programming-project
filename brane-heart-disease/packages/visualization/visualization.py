@@ -7,6 +7,7 @@ import re
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+import shutil
 from typing import List, Any
 from joblib import load
 from glob import glob
@@ -67,10 +68,11 @@ def ratio_histogram(
        )
     )
     fig.update_layout(legend=dict(
-        yanchor="top",
-        y=0.99,
-        xanchor="left",
-        x=0.01,
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="right",
+        x=1,
         font=dict(size=20)
     ))
     fig.write_html(f"/result/ratio_{feature_name}.html")
@@ -136,7 +138,9 @@ def generate_report(filepath):
         feature_imps = feature_imp_item,
         models = model_item
     )
-
+    
+    # output depend html
+    shutil.copy('./dataset_dscp.html', '/result/dataset_dscp.html')
     # output report
     with open("/result/report.html", 'w+', encoding='utf-8') as f:
         f.write(out)

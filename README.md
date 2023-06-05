@@ -23,7 +23,7 @@ There are two pipeline in total. The first one is compute pipeline. The second o
 To trigger compute pipeline, run:
 
 ```bash
-bash brane-programming-project/brane-heart-disease/scripts/pipeline.sh
+brane run brane-programming-project/brane-heart-disease/scripts/pipeline.bs
 ```
 
 If the compute pipeline run sucessfully, you should see:
@@ -33,7 +33,7 @@ If the compute pipeline run sucessfully, you should see:
 To trigger report pipeline, run:
 
 ```bash
-bash brane-programming-project/brane-heart-disease/scripts/report.sh
+brane run brane-programming-project/brane-heart-disease/scripts/report.bs
 ```
 
 If the report pipeline run sucessfully, you should see:

@@ -1,4 +1,4 @@
-// A BraneScript workflow for testing the preprocessing package
+// A BraneScript workflow for the model package
 
 
 println("INFO: This script only do model generation. Execute pipeline.bs instead if you want to run the whole workflow.");

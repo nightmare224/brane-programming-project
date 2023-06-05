@@ -1,4 +1,4 @@
-// A BraneScript workflow for testing the preprocessing package
+// A BraneScript workflow for the visualization package
 
 println("INFO: This script only do visualization. Execute pipeline.bs instead if you want to run the whole workflow.");
 println("INFO: Run model.bs before run this workflow.");
